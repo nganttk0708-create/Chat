@@ -1,38 +1,48 @@
 extends ../layouts/default.pug
 
 block main
-        .container.my-3
-            .row 
-                .col-12
-                    .chat 
-                        .inner-body
-                            .inner-incoming
-                                .inner-name Em Yeu 
-                                .inner-content
-                                    | Anh oi, sang nha em nha. Nha em khong co ai
-                            .inner-outgoing
-                                .inner-content
-                                    | The a? Oke em yeu
-                            .inner-incoming
-                                .inner-name Em Yeu 
-                                .inner-content
-                                    | Anh den chua anh?
-                            .inner-outgoing
-                                .inner-content
-                                    | Anh den roi. Nhung dau thay ai o nha dau em?
-                            .inner-incoming
-                                .inner-name Em Yeu 
-                                .inner-content
-                                    | Thi em bao là khong ai o nha mà :))
-                        .inner-foot
-                            form(
-                                class='inner-form'
-                                action=''
-                            )
-                                input(
-                                    type="text"
-                                    placeholder='Nhập nội dung...'
-                                    name='content'
-                                )
-                                button
-                                    i.fa-solid.fa-paper-plane
+    .chat-container
+        // Cột trái - Danh sách bạn bè / nhóm
+        .sidebar
+            ul.chat-list
+                li.active 
+                    i.fa-solid.fa-user
+                    span Tin nhắn
+                li 
+                    i.fa-solid.fa-user
+                    span Liên hệ
+                li 
+                    i.fa-solid.fa-user
+                    span Cài đặt
+
+        // Cột giữa - Danh sách tin nhắn gần đây
+        .conversation-list
+            h4 Cuộc trò chuyện gần đây
+            .conversation
+                strong Em Yêu:
+                span Anh ơi, sáng qua sao chưa rep em 😢
+            .conversation
+                strong Minh Phú:
+                span Gửi file chưa ông?
+
+        // Cột phải - Khu vực chat chính
+        .chat-window
+            .inner-body
+                .inner-incoming
+                    .inner-name Em Yêu 
+                    .inner-content Anh ơi, sang nhà em nha. Nhà em không có ai.
+                .inner-outgoing
+                    .inner-content Thế à? Oke em yêu.
+                .inner-incoming
+                    .inner-name Em Yêu 
+                    .inner-content Anh đến chưa anh?
+                .inner-outgoing
+                    .inner-content Anh đến rồi, nhưng đâu thấy ai ở nhà đâu em?
+                .inner-incoming
+                    .inner-name Em Yêu 
+                    .inner-content Thì em bảo là không ai ở nhà mà :))
+            .inner-foot
+                form(class='inner-form' action='')
+                    input(type="text" placeholder='Nhập nội dung...' name='content')
+                    button
+                        i.fa-solid.fa-paper-plane
