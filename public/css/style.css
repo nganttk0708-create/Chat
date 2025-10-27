@@ -126,3 +126,106 @@ body {
 .chat .inner-body::-webkit-scrollbar-track {
     background-color: #ffe6f2;
 }
+
+/* ========================= */
+/*  FORM DANG NHAP           */
+/* ========================= */
+body {
+    background-color: #ffe6f2;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.container {
+    margin-top: 60px;
+}
+
+h1.text-center {
+    color: #cc0066;
+    font-weight: 700;
+    margin-bottom: 30px;
+}
+
+/* Khung form */
+form {
+    background-color: #fff;
+    padding: 40px;
+    border-radius: 25px;
+    box-shadow: 0 10px 25px rgba(255, 105, 180, 0.25);
+    transition: 0.3s;
+}
+
+form:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 35px rgba(255, 105, 180, 0.3);
+}
+
+
+/* Label */
+form label {
+    color: #cc0066;
+    font-weight: 600;
+}
+
+/* Ô nhập */
+.form-control {
+    border: 2px solid #ffb3d9;
+    border-radius: 10px;
+    padding: 10px 15px;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.form-control:focus {
+    border-color: #ff66b2;
+    box-shadow: 0 0 8px rgba(255, 105, 180, 0.3);
+    outline: none;
+}
+
+/* Nút đăng nhập */
+.btn-login {
+    flex: 1;
+    background: linear-gradient(135deg, #ff66b2, #ff3385);
+    border: none;
+    color: white;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 12px 0;
+    margin-right: 10px;
+    transition: all 0.3s;
+}
+
+.btn-login:hover {
+    background: linear-gradient(135deg, #ff3399, #ff1a75);
+    box-shadow: 0 6px 15px rgba(255, 105, 180, 0.4);
+    transform: translateY(-2px);
+}
+
+/* Nút đăng ký */
+.btn-register {
+    flex: 1;
+    text-align: center;
+    background-color: #fff;
+    border: 2px solid #ff66b2;
+    color: #ff66b2;
+    font-weight: 600;
+    border-radius: 12px;
+    padding: 12px 0;
+    transition: all 0.3s;
+}
+
+.btn-register:hover {
+    background-color: #ff66b2;
+    color: #fff;
+    box-shadow: 0 6px 15px rgba(255, 105, 180, 0.4);
+    transform: translateY(-2px);
+}
+
+/* ========================= */
+/*  CANH DEU & BO CUC FORM   */
+/* ========================= */
+form .form-group {
+    margin-bottom: 20px;
+}
+
+form input::placeholder {
+    color: #cc6699;
+}

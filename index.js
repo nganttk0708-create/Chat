@@ -1,6 +1,9 @@
 const express = require('express')
 const route = require('./route/index.route')
+const database = require('./config/database')
+const cookieParser = require('cookie-parser');
 const http = require('http')
+const { Server } = require("socket.io")
 
 const app = express()
 const port = 3000
@@ -10,14 +13,21 @@ app.set('view engine', 'pug')
 
 app.use(express.static('public'))
 
+database.connect()
+
+app.use(cookieParser());
+
+// Đọc dữ liệu từ form (application/x-www-form-urlencoded)
+app.use(express.urlencoded({ extended: true }));
+
+// Đọc dữ liệu JSON (application/json)
+app.use(express.json());
+
 // Socket IO
 const server = http.createServer(app);
-const { Server } = require("socket.io")
 const io = new Server(server)
 
-io.on('connection', (socket) => {
-  console.log('a user connected')
-})
+global._io = io
 // End Socket IO
 
 // Route
