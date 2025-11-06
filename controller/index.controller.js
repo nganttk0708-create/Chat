@@ -22,6 +22,16 @@ module.exports.index = async (req, res) => {
             })
         })
 
+        // Typing
+        socket.on('client-typing', async (type) => {
+            socket.broadcast.emit('server-return-typing', {
+                user_id: userID,
+                fullName: fullName,
+                type: type
+            })
+        })
+    // End Typing
+
     })
     // End Socket IO
 

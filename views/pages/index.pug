@@ -33,6 +33,8 @@ block main
                         if chat.user_id != user.id
                             .inner-name #{chat.infoUser.fullName} 
                         .inner-content #{chat.content}
+                .inner-list-typing
+
             .inner-foot
                 form(class='inner-form' action='')
                     input(type="text" placeholder='Nhập nội dung...' name='content' autocomplete="off")
