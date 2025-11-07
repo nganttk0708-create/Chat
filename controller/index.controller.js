@@ -1,6 +1,8 @@
 const Chat = require('../model/chat.model')
 const Account = require('../model/accounts.model')
 
+const uploadToCloundinary = require('../helper/uploadToCloudinary');
+
 // [GET] /
 module.exports.index = async (req, res) => {
     const userID = res.locals.user._id
@@ -8,17 +10,26 @@ module.exports.index = async (req, res) => {
     // Socket IO
     _io.once('connection', (socket) => {
         socket.on('client-send-message', async (content) => {
+            let images = []
+
+            for (const imageBuffer of content.images) {
+                const linkImage = await uploadToCloundinary(imageBuffer)
+                images.push(linkImage)
+            }
+
             const chat = new Chat({
                 user_id: userID,
-                content: content
-            })
+                content: content.content,
+                images: images
 
+            })
             await chat.save()
 
             _io.emit('server-return-message', {
                 userID: userID,
                 fullName: fullName,
-                content: content
+                content: content.content,
+                images: images
             })
         })
 

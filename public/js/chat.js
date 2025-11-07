@@ -1,3 +1,10 @@
+// file-upload-with-preview
+// const upload = new FileUploadWithPreview.FileUploadWithPreview('upload-images',{
+//     multiFile: true,
+//     maxFileCount: 5,
+// });
+// end file-upload-with-preview
+
 // Client Send Message
 const formSendData = document.querySelector('.chat-window .inner-form');
 console.log('formSendData', formSendData);
@@ -6,11 +13,15 @@ if (formSendData) {
     formSendData.addEventListener('submit', (e) => {
         e.preventDefault();
         const content = e.target.elements.content.value.trim();
-        console.log('Sending message:', content);
+        const images = upload.cachedFileArray;
 
         if (content) {
-            socket.emit('client-send-message', content);
+            socket.emit('client-send-message', {
+                content: content,
+                images: images
+            });
             e.target.elements.content.value = '';
+            upload.resetPreviewPanel();
             socket.emit('client-typing', 'hidden');
         }
     });
@@ -26,6 +37,8 @@ socket.on('server-return-message', (data) => {
 
     const messageDiv = document.createElement('div');
     let htmlFullName = '';
+    let htmlContent = '';
+    let htmlImages = '';
 
     if (data.userID == myID) {
         messageDiv.classList.add('inner-outgoing');
@@ -34,9 +47,21 @@ socket.on('server-return-message', (data) => {
         messageDiv.classList.add('inner-incoming');
     }
 
+    if (data.content){
+        htmlContent += `<div class='inner-content'>${data.content}</div>`;
+    }
+
+    if (data.images.length > 0) {
+        htmlImages += `<div class='inner-images'>`;
+        data.images.forEach((image) => {
+            htmlImages += `<img src='${image}' alt='image' class='chat-image'/>`;
+        });
+        htmlImages += `</div>`;
+    }
+
     messageDiv.innerHTML = `
         ${htmlFullName}
-        <div class='inner-content'>${data.content}</div>
+        ${htmlContent}
     `;
 
     chatWindow.insertBefore(messageDiv, boxTyping);

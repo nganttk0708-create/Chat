@@ -394,3 +394,69 @@ form input::placeholder {
 }
 
 /* End box typing */
+
+/* ========================= */
+/*  HÌNH ẢNH TRONG TIN NHẮN  */
+/* ========================= */
+.inner-images {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 8px;
+}
+
+.chat-image {
+    width: 140px;
+    height: 140px;
+    object-fit: cover;
+    border-radius: 12px;
+    box-shadow: 0 2px 6px rgba(255, 105, 180, 0.2);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+}
+
+.chat-image:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(255, 105, 180, 0.35);
+}
+
+/* .chat-window .inner-preview-images {
+    position: relative;
+}
+
+.chat-window .inner-preview-images .lable-container {
+    display: none;
+}
+
+.chat-window .inner-preview-images .input-container {
+    display: none;
+}
+
+.chat-window .inner-preview-images .image-preview {
+    height: auto;
+    padding: 0;
+    border-radius: 0;
+}
+
+.chat-window .inner-preview-images .image-preview-item {
+    width: 90px;
+    background-size: contain;
+} */
+
+/* THỜI GIAN GỬI TIN NHẮN 
+.inner-time {
+    font-size: 12px;
+    color: #888;
+    margin-top: 5px;
+    text-align: right;
+    opacity: 0.8;
+}
+
+.inner-incoming .inner-time {
+    text-align: left;
+}
+
+.inner-outgoing .inner-time {
+    text-align: right;
+} */
+
