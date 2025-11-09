@@ -8,7 +8,27 @@ html
         link(rel="stylesheet", href="https://unpkg.com/file-upload-with-preview/dist/style.css")
         link(rel="stylesheet", href="/css/style.css")
     body
-        block main
+        .chat-container
+            // Cột trái - Danh sách bạn bè / nhóm
+            .sidebar
+                ul.chat-list
+                    li.active 
+                        a(href="/")
+                            i.fa-solid.fa-comment
+                            span Tin nhắn
+                    li 
+                        a(href="/socialDashboard/friendsList")
+                            i.fa-solid.fa-user-group
+                            span Liên hệ
+                ul.chat-list
+                    li 
+                        a(href="/settings")
+                            i.fa-solid.fa-gear                
+                            span Cài đặt
+            .content-list
+                block contentList 
+            .content-view 
+                block main
                                     
 
         script(src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous")

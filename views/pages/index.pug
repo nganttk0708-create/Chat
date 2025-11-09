@@ -1,58 +1,42 @@
 extends ../layouts/default.pug
 
+block contentList
+    h4 Cuộc trò chuyện gần đây
+    .conversation
+        strong Em Yêu:
+        span Anh ơi, sáng qua sao chưa rep em 😢
+    .conversation
+        strong Minh Phú:
+        span Gửi file chưa ông?
+
+
 block main
-    .chat-container
-        // Cột trái - Danh sách bạn bè / nhóm
-        .sidebar
-            ul.chat-list
-                li.active 
-                    i.fa-solid.fa-user
-                    span Tin nhắn
-                li 
-                    i.fa-solid.fa-user
-                    span Liên hệ
-                li 
-                    i.fa-solid.fa-user
-                    span Cài đặt
-
-        // Cột giữa - Danh sách tin nhắn gần đây
-        .conversation-list
-            h4 Cuộc trò chuyện gần đây
-            .conversation
-                strong Em Yêu:
-                span Anh ơi, sáng qua sao chưa rep em 😢
-            .conversation
-                strong Minh Phú:
-                span Gửi file chưa ông?
-
-        // Cột phải - Khu vực chat chính
-        .chat-window(my-id=user.id)
-            .inner-body
-                for chat in chats
-                    div(class=(chat.user_id == user.id ? 'inner-outgoing' : 'inner-incoming'))
-                        if chat.user_id != user.id
-                            .inner-name #{chat.infoUser.fullName} 
-                        if (chat.content)
-                            .inner-content #{chat.content}
-                        if chat.images.length > 0
-                            .inner-images
-                                for image in chat.images
-                                    img(src=image alt="image" class="chat-image")
-                        //- .inner-time #{chat.createdAt.toLocaleString('vi-VN')}
-                .inner-list-typing
-            
-            //- .inner-preview-images
-            //-     div(class="custom-file-container" data-upload-id="upload-images")
-
-            .inner-foot
-                form(class='inner-form' action='')
-                    input(type="text" placeholder='Nhập nội dung...' name='content' autocomplete="off")
-                    //- label(class='button-icon btn btn-light mx-2')
-                    //-     i.fa-solid.fa-image
-                    span(class='button-icon btn btn-light mx-2') 
-                        i.fa-regular.fa-face-smile
-                    button
-                        i.fa-solid.fa-paper-plane
+    .inner-body(my-id=user.id)
+        for chat in chats
+            div(class=(chat.user_id == user.id ? 'inner-outgoing' : 'inner-incoming'))
+                if chat.user_id != user.id
+                    .inner-name #{chat.infoUser.fullName} 
+                if (chat.content)
+                    .inner-content #{chat.content}
+                if chat.images.length > 0
+                    .inner-images
+                        for image in chat.images
+                            img(src=image alt="image" class="chat-image")
+                //- .inner-time #{chat.createdAt.toLocaleString('vi-VN')}
+        .inner-list-typing
     
+    //- .inner-preview-images
+    //-     div(class="custom-file-container" data-upload-id="upload-images")
+
+    .inner-foot
+        form(class='inner-form' action='')
+            input(type="text" placeholder='Nhập nội dung...' name='content' autocomplete="off")
+            //- label(class='button-icon btn btn-light mx-2')
+            //-     i.fa-solid.fa-image
+            span(class='button-icon btn btn-light mx-2') 
+                i.fa-regular.fa-face-smile
+            button
+                i.fa-solid.fa-paper-plane
+
     div(class='tooltip' role='tooltip')
         emoji-picker

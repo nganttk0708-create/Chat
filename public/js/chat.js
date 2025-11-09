@@ -6,19 +6,19 @@
 // end file-upload-with-preview
 
 // Client Send Message
-const formSendData = document.querySelector('.chat-window .inner-form');
+const formSendData = document.querySelector('.content-view .inner-form');
 console.log('formSendData', formSendData);
 
 if (formSendData) {
     formSendData.addEventListener('submit', (e) => {
         e.preventDefault();
         const content = e.target.elements.content.value.trim();
-        const images = upload.cachedFileArray;
+        const images = []//upload.cachedFileArray;
 
         if (content) {
             socket.emit('client-send-message', {
                 content: content,
-                images: images
+                images: [] //images
             });
             e.target.elements.content.value = '';
             upload.resetPreviewPanel();
@@ -31,16 +31,16 @@ if (formSendData) {
 
 // Server Return Message
 socket.on('server-return-message', (data) => {
-    const myID = document.querySelector('.chat-window').getAttribute('my-id');
-    const chatWindow = document.querySelector('.chat-window .inner-body');
-    const boxTyping = document.querySelector('.chat-window .inner-list-typing');
+    const myID = document.querySelector('.content-view .inner-body').getAttribute('my-id');
+    const chatBody = document.querySelector('.content-view .inner-body');
+    const boxTyping = document.querySelector('.content-view .inner-list-typing');
 
     const messageDiv = document.createElement('div');
     let htmlFullName = '';
     let htmlContent = '';
     let htmlImages = '';
 
-    if (data.userID == myID) {
+    if (data.userID === myID) {
         messageDiv.classList.add('inner-outgoing');
     } else {
         htmlFullName = `<div class='inner-name'>${data.fullName}</div>`;
@@ -64,17 +64,17 @@ socket.on('server-return-message', (data) => {
         ${htmlContent}
     `;
 
-    chatWindow.insertBefore(messageDiv, boxTyping);
+    chatBody.insertBefore(messageDiv, boxTyping);
 
-    chatWindow.scrollTop = chatWindow.scrollHeight;
+    chatBody.scrollTop = chatBody.scrollHeight;
 });
 // End Server Return Message
 
 
 // Scroll to Bottom Chat Window
-const chatWindowBody = document.querySelector('.chat-window .inner-body');
-if (chatWindowBody) {
-    chatWindowBody.scrollTop = chatWindowBody.scrollHeight;
+const chatBody = document.querySelector('.content-view .inner-body');
+if (chatBody) {
+    chatBody.scrollTop = chatBody.scrollHeight;
 }
 // End Scroll
 
@@ -92,6 +92,7 @@ if (buttonIcon) {
 
 // Show Typing
 var timeOut
+
 const showTyping = () => {
     socket.emit('client-typing', 'show');
 
@@ -101,6 +102,8 @@ const showTyping = () => {
         socket.emit('client-typing', 'hidden');
     }, 3000)
 }
+
+
 
 // End Show Typing
 
@@ -123,17 +126,18 @@ if (emojiPicker) {
     // input keyup - typing indicator
 
     inputChat.addEventListener('keyup', showTyping);
+
 }
 // End Emoji Picker
 
 
 // Server Return Typing
-const elementListTyping = document.querySelector('.chat-window .inner-list-typing');
+const elementListTyping = document.querySelector('.content-view .inner-list-typing');
 if (elementListTyping) {
     socket.on('server-return-typing', (data) => {
         if (data.type == 'show') {
             const existTyping = elementListTyping.querySelector(`[user-id='${data.user_id}']`);
-            const chatWindow = document.querySelector('.chat-window .inner-body');
+            const chatBody = document.querySelector('.content-view .inner-body');
 
             if (!existTyping) {
                 const boxTyping = document.createElement('div');
@@ -151,7 +155,7 @@ if (elementListTyping) {
 
                 elementListTyping.appendChild(boxTyping);
             }
-            chatWindow.scrollTop = chatWindow.scrollHeight;
+            chatBody.scrollTop = chatBody.scrollHeight;
 
         }
         else{

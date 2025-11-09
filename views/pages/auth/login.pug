@@ -1,17 +1,20 @@
-extends ../../layouts/default.pug
+extends ../../layouts/auth.pug
 
 block main
-    .container.my-3
-        .row.justify-content-center 
-            .col-8 
-                h1.text-center Đăng nhập 
-                form(action="/auth/login" method="POST")
-                    div.form-group
-                        label(for='email') Email
-                        input#email.form-control(type='email' name='email' required)
-                    div.form-group
-                        label(for='password') Mật khẩu
-                        input#password.form-control(type='password' name='password' required)
-                    div.form-group.mt-4.d-flex.justify-content-between
-                        button.btn.btn-login(type='submit') Đăng nhập
-                        a.btn.btn-register(href="/auth/register") Đăng ký
+    .login-wrapper
+        .login-box
+            h1.text-center.mb-4 Đăng nhập
+
+            form(action="/auth/login" method="POST")
+                .form-group.mb-4
+                    label.form-label(for="email") Email
+                    input#email.form-control(type="email", name="email", required, autofocus)
+
+                .form-group.mb-4
+                    label.form-label(for="password") Mật khẩu
+                    input#password.form-control(type="password", name="password", required)
+
+                .d.d-flex.justify-content-between.align-items-center.flex-wrap.gap-3
+                    button.btn.btn-login(type="submit") Đăng nhập
+                    a.btn.btn-register(href="/auth/register") Đăng ký
+
