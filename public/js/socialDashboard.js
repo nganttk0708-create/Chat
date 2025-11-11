@@ -39,3 +39,17 @@ if (listBtnRefuseFriend.length > 0){
     })
 }
 // end refuse friend requests
+
+// accept friend requests
+const listBtnAcceptFriend = document.querySelectorAll('[btn-accept-friend]')
+if (listBtnAcceptFriend.length > 0){
+    listBtnAcceptFriend.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.closest('.box-user').classList.add('accepted')
+            const userID = btn.getAttribute('btn-accept-friend')
+            
+            socket.emit('client-accept-friend', userID)
+        })
+    })
+}
+// end accept friend requests
