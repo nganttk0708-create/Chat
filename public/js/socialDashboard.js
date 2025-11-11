@@ -25,3 +25,17 @@ if (listBtnCancelFriend.length > 0){
     })
 }
 // cancel send friend requests
+
+// refuse friend requests
+const listBtnRefuseFriend = document.querySelectorAll('[btn-refuse-friend]')
+if (listBtnRefuseFriend.length > 0){
+    listBtnRefuseFriend.forEach(btn => {
+        btn.addEventListener('click', () => {
+            btn.closest('.box-user').classList.add('refuse')
+            const userID = btn.getAttribute('btn-refuse-friend')
+            
+            socket.emit('client-refuse-friend', userID)
+        })
+    })
+}
+// end refuse friend requests

@@ -39,7 +39,7 @@ module.exports = (res) => {
         socket.on('client-cancel-friend', async (userID) => {
             const myUserID = res.locals.user.id
 
-            // Xóa A vào friendAccepts của B
+            // Xóa A trong friendAccepts của B
             const hasUserIDAinB = await User.findOne({
                 _id: userID,
                 friendAccepts: myUserID
@@ -51,7 +51,7 @@ module.exports = (res) => {
                     $pull: {friendAccepts: myUserID}
                 })
             }
-            // Xóa B vào friendRequests của A
+            // Xóa B trong friendRequests của A
             const hasUserIDBinA = await User.findOne({
                 _id: myUserID,
                 friendRequests: userID
@@ -67,5 +67,38 @@ module.exports = (res) => {
 
         })
         // Kết thúc chức năng hủy yêu cầu
+ 
+        // Chức năng từ chối yêu cầu
+        socket.on('client-refuse-friend', async (userID) => {
+            const myUserID = res.locals.user.id
+
+            // Xóa B trong friendAccepts của A
+            const hasUserIDBinA = await User.findOne({
+                _id: myUserID,
+                friendAccepts: userID
+            })
+            if (hasUserIDBinA){
+                await User.updateOne({
+                    _id: myUserID
+                },{
+                    $pull: {friendAccepts: userID}
+                })
+            }
+            // Xóa A trong friendRequests của B
+            const hasUserIDAinB = await User.findOne({
+                _id: userID,
+                friendRequests: myUserID
+            })
+
+            if (hasUserIDAinB){
+                await User.updateOne({
+                    _id: userID
+                },{
+                    $pull: {friendRequests: myUserID}
+                })
+            }
+
+        })
+        // Kết thúc chức năng từ chối yêu cầu
     })
 }

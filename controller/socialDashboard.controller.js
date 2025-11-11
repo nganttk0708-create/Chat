@@ -68,9 +68,26 @@ module.exports.friendRequests = async (req, res) => {
     })
 }
 
-// // [GET] /socialDashboard/invitesSent
-// module.exports.invitesSent = async (req, res) => {
-//     res.render('pages/socialDashboard/invitesSent', {
-//         pageTitle: 'Lời mời đã gửi'
-//     })
-// }
+// [GET] /socialDashboard/friendAccepts
+module.exports.friendAccepts = async (req, res) => {
+    // socket
+    socialDashBoardSocket(res)
+    // end socket    
+
+    const userID = res.locals.user.id;
+    const myUser = await User.findOne({
+        _id: userID
+    })
+
+    const friendAccepts = myUser.friendAccepts
+
+    const users = await User.find({
+        _id: { $in: friendAccepts},
+        deleted: false
+    }).select('_id avatar fullName');
+
+    res.render('pages/socialDashboard/friendAccepts', {
+        pageTitle: 'Lời mời kết bạn',
+        users: users
+    })
+}
