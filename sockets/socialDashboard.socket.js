@@ -32,6 +32,7 @@ module.exports = (res) => {
                 })
             }
 
+            // Lấy ra độ dài friendAccepts của B và trả ra cho B
             const infoUserB = await User.findOne({
                 _id: userID
             })
@@ -73,6 +74,15 @@ module.exports = (res) => {
                     $pull: {friendRequests: userID}
                 })
             }
+            // Lấy ra độ dài friendAccepts của B và trả ra cho B
+            const infoUserB = await User.findOne({
+                _id: userID
+            })
+            const lengthFriendAccepts = infoUserB.friendAccepts.length
+            socket.broadcast.emit('server-return-length-friend-accept', {
+                userID: userID,
+                lengthFriendAccepts: lengthFriendAccepts
+            })
 
         })
         // Kết thúc chức năng hủy yêu cầu
