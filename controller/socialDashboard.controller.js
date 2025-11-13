@@ -3,8 +3,26 @@ const socialDashBoardSocket = require('../sockets/socialDashboard.socket')
 
 // [GET] /socialDashboard/friendsList
 module.exports.friendsList = async (req, res) => {
+    // socket
+    socialDashBoardSocket(res)
+    // end socket    
+
+    const userID = res.locals.user.id;
+    const myUser = await User.findOne({
+        _id: userID
+    })
+
+    const friendsList = myUser.friendsList
+    const friendListID = friendsList.map(item => item.user_id)
+
+    const users = await User.find({
+        _id: { $in: friendListID},
+        deleted: false
+    }).select('_id avatar fullName statusOnline');
+
     res.render('pages/socialDashboard/friendsList', {
-        pageTitle: 'Danh sách bạn bè'
+        pageTitle: 'Danh sách bạn bè',
+        users: users
     })
 }
 
@@ -22,6 +40,8 @@ module.exports.userList = async (req, res) => {
 
     const friendRequests = myUser.friendRequests
     const friendAccepts = myUser.friendAccepts
+    const friendsList = myUser.friendsList
+    const friendListID = friendsList.map(item => item.user_id)
 
     const users = await User.find({
         $and: [
@@ -33,6 +53,9 @@ module.exports.userList = async (req, res) => {
             },
             {
                 _id: { $nin: friendAccepts}
+            },
+            {
+                 _id: { $nin: friendListID } 
             }
         ],
         deleted: false

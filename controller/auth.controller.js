@@ -1,4 +1,4 @@
-const Account = require('../model/accounts.model');
+const User = require('../model/accounts.model');
 const md5 = require('md5');
 
 // [GET] /auth/register
@@ -10,7 +10,7 @@ module.exports.register = async (req, res) => {
 
 // [Post] /auth/register
 module.exports.registerPost = async (req, res) => {
-    const emailExist = await Account.findOne({
+    const emailExist = await User.findOne({
         email: req.body.email,
         deleted: false
     });
@@ -22,7 +22,7 @@ module.exports.registerPost = async (req, res) => {
 
     req.body.password = md5(req.body.password);
 
-    const record = new Account(req.body)
+    const record = new User(req.body)
     await record.save();
     res.redirect('/auth/login');
 }
@@ -42,7 +42,7 @@ module.exports.login = async (req, res) => {
 module.exports.loginPost = async (req, res) => {
     const { email, password } = req.body;
 
-    const user = await Account.findOne({
+    const user = await User.findOne({
         email: email,  
         deleted: false 
     });
@@ -56,12 +56,24 @@ module.exports.loginPost = async (req, res) => {
     }
 
     res.cookie('token', user.token)
+
+    await User.updateOne({
+        token: user.token
+    }, {
+        statusOnline: 'online'
+    })
     res.redirect('/');
 
 }
 
 // [GET] /auth/logout
 module.exports.logout = async (req, res) => {
+    await User.updateOne({
+        token: req.cookies.token
+    },{
+        statusOnline: 'offline'
+    })
+
     res.clearCookie('token');
     res.redirect('/auth/login');
 }

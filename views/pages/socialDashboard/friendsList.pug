@@ -1,6 +1,17 @@
 extends ../../layouts/socialDashboard.pug
 
 block main
-    h1.title Danh sách bạn bè
+    .friends-container
+        h1.title Danh sách bạn bè
 
-                    
+        .users-list(data-users-accept=user.id)
+            each user in users
+                .box-user(user-id=user.id)
+                    .inner-avatar
+                        img(src=user.avatar alt=user.fullName)
+                    .inner-info
+                        .inner-name= user.fullName
+                        .inner-buttons
+                            a.btn.btn-sm.btn-primary.mr-1(href='#' btn-accept-friend=user.id) Nhắn tin
+                    .inner-status(status=user.statusOnline)
+                        i.fa-solid.fa-circle
