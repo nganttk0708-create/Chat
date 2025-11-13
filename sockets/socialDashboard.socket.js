@@ -42,10 +42,18 @@ module.exports = (res) => {
                 lengthFriendAccepts: lengthFriendAccepts
             })
 
+            // Lấy info của A trả về cho B
+            const infoUserA = await User.findOne({
+                _id: myUserID
+            }).select('_id avatar fullName')
+            socket.broadcast.emit('server-return-info-friend-accept', {
+                userID: userID,
+                infoUserA: infoUserA
+            })
         })
         // Kết thúc chức năng gửi yêu cầu
 
-        // Chức năng hủy yêu cầu
+        // Chức năng hủy gửi yêu cầu
         socket.on('client-cancel-friend', async (userID) => {
             const myUserID = res.locals.user.id
 
@@ -85,7 +93,7 @@ module.exports = (res) => {
             })
 
         })
-        // Kết thúc chức năng hủy yêu cầu
+        // Kết thúc chức năng hủy gửi yêu cầu
  
         // Chức năng từ chối yêu cầu
         socket.on('client-refuse-friend', async (userID) => {

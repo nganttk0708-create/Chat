@@ -19,9 +19,9 @@ if (formSendData) {
                 content: content,
                 images: [] //images
             });
+            socket.emit('client-typing', 'hidden');
             e.target.elements.content.value = '';
             // upload.resetPreviewPanel();
-            socket.emit('client-typing', 'hidden');
         }
     });
 }
