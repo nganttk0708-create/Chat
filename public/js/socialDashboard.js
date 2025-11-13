@@ -67,10 +67,11 @@ if (badgeUserAccept){
 // end server-return-length-friend-accept
 
 // server-return-info-friend-accept
-const dataUserAccept = document.querySelector('[data-users-accept]')
-if (dataUserAccept){
-    const userID = dataUserAccept.getAttribute('data-users-accept')
-    socket.on('server-return-info-friend-accept', data => {
+socket.on('server-return-info-friend-accept', data => {
+    // Trang lời mời đã nhân
+    const dataUserAccept = document.querySelector('[data-users-accept]')
+    if (dataUserAccept){
+        const userID = dataUserAccept.getAttribute('data-users-accept')
         if (userID === data.userID){
             // Vẽ user ra giao diện
             const div = document.createElement('div')
@@ -137,9 +138,20 @@ if (dataUserAccept){
             })
             // Hết chấp nhận lời mời kết bạn
         }
-        
-    })
-}
+    }
+
+    // Trang danh sách người dùng
+    const dataUserList = document.querySelector('[data-user-list]')
+    if (dataUserList){
+        const userID = dataUserList.getAttribute('data-user-list')
+        if (data.userID == userID){
+            const boxUserRemove = dataUserList.querySelector(`[user-id='${data.infoUserA._id}']`)
+            if (boxUserRemove){
+                dataUserList.removeChild(boxUserRemove)
+            }
+        }
+    }
+})
 // end server-return-info-friend-accept
 
 // server-return-user-cancel-friend
