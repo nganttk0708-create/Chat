@@ -2,15 +2,11 @@ const Chat = require('../model/chat.model')
 const RoomChat = require('../model/rooms-chat.model')
 const Account = require('../model/accounts.model')
 const chatSocket = require('../sockets/chat.socket')
-
-const uploadToCloundinary = require('../helper/uploadToCloudinary');
-
+const uploadToCloundinary = require('../helper/uploadToCloudinary')
 
 // [GET] /
 module.exports.index = async (req, res) => {
     const user = res.locals.user || null
-
-    // đảm bảo userId là string
     const userID = user && (user.id || (user._id && user._id.toString()))
     const roomChatID = req.params.roomChatID
 
@@ -29,7 +25,6 @@ module.exports.index = async (req, res) => {
                 "users.user_id": userID,
                 deleted: false
             })
-                .sort({ updatedAt: -1 })
                 .limit(20)
                 .lean()
         } catch (e) {
@@ -48,7 +43,6 @@ module.exports.index = async (req, res) => {
                     const acc = await Account.findById(u.user_id)
                         .select("fullName avatar")
                         .lean()
-
                     if (acc) {
                         u.fullName = acc.fullName
                         u.avatar = acc.avatar
@@ -84,13 +78,21 @@ module.exports.index = async (req, res) => {
                         (last.content && last.content.trim()) ||
                         (last.images?.length ? "[Hình ảnh]" : "")
                 }
+                room.lastPreviewTime = last.createdAt
             } else {
                 room.lastPreview = null
+                room.lastPreviewTime = null
             }
         } catch (e) {
             room.lastPreview = null
+            room.lastPreviewTime = null
         }
     }
+
+    // --------------- SORT ROOMS THEO TIN NHẮN GẦN NHẤT ---------------
+    rooms.sort((a, b) => {
+        return new Date(b.lastPreviewTime || 0) - new Date(a.lastPreviewTime || 0)
+    })
 
     // ---------------- LẤY CHATS ----------------
     let chats = []
@@ -107,7 +109,6 @@ module.exports.index = async (req, res) => {
                 const info = await Account.findById(chat.user_id)
                     .select("fullName")
                     .lean()
-
                 chat.infoUser = info || { fullName: "Người dùng" }
             }
         } catch (e) {
