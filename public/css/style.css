@@ -289,7 +289,7 @@ body {
     font-size: 16px;
     color: var(--text-muted); /* Dùng màu chữ nhạt để dễ nhìn */
     max-width: 560px;
-}
+z}
 
 /* Tin nhắn */
 .inner-incoming,
