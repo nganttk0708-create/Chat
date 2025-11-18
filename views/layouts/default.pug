@@ -11,6 +11,11 @@ html
         .chat-container
             // Cột trái - Danh sách bạn bè / nhóm
             .sidebar
+                // Avatar
+                .sidebar-avatar
+                    a.active(href="/profile/edit")
+                        img.avatar(src=user.avatar alt="Avatar của tôi")
+
                 ul.chat-list
                     li
                         a.active(href="/")
@@ -20,10 +25,12 @@ html
                         a(href="/socialDashboard/friendsList")
                             i.fa-solid.fa-user-group
                             span Liên hệ
-                    li
-                        a(href="/auth/logout")
-                            i.fa-solid.fa-right-from-bracket
-                            span Đăng xuất
+
+                // Logout xuống đáy
+                .sidebar-logout
+                    a(href="/auth/logout")
+                        i.fa-solid.fa-right-from-bracket
+
 
             .content-list
                 block contentList 

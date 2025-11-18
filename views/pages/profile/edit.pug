@@ -1,0 +1,23 @@
+extends ../../layouts/default
+
+block contentList
+    h3 Chỉnh sửa thông tin cá nhân
+    form(action="/profile/edit" method="POST" enctype="multipart/form-data")
+        .mb-3
+            label.form-label(for="fullName") Họ và tên
+            input.form-control(type="text" name="fullName" id="fullName" value=user.fullName required)
+        .mb-3
+            label.form-label(for="email") Email
+            input.form-control(type="email" name="email" id="email" value=user.email required)
+        .mb-3
+            label.form-label(for="numberPhone") Số điện thoại
+            input.form-control(type="text" name="numberPhone" id="numberPhone" value=user.numberPhone)
+        .mb-3
+            label.form-label(for="avatar") Chọn ảnh đại diện
+            input.form-control(type="file" name="avatar" id="avatarInput")
+            br
+            img#avatarPreview(src=user.avatar alt="Avatar hiện tại" width="100" height="100" style="border-radius:50%; object-fit:cover; margin-top:10px;")
+        button.btn.btn-primary(type="submit") Lưu thay đổi
+
+block script 
+    script(src="/js/profile.js")
