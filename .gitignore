@@ -1,6 +1,9 @@
 # dependencies
 /node_modules
 
+# ignore avatar uploads
+/public/uploads/avatars/
+
 # debug files
 npm-debug.log*
 yarn-debug.log*
