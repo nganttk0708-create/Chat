@@ -4,7 +4,7 @@ block contentList
     h4 Cuộc trò chuyện gần đây
     if rooms && rooms.length > 0
         each room in rooms
-            - // Tìm user còn lại nếu là phòng bạn bè
+            // Tìm user còn lại nếu là phòng bạn bè
             - var roomName = ''
             - var otherUser = null
             - var myId = (user && user.id) ? user.id.toString() : (user && user._id ? user._id.toString() : '')
@@ -18,12 +18,18 @@ block contentList
                 - roomName = room.typeRoom || 'Phòng chat'
 
             a(href=`/${room._id}` class='conversation' data-room-id=room._id)
-                strong #{roomName}
+                // Chèn Avatar cho danh sách chat
+                if otherUser && otherUser.avatar
+                    img(src=otherUser.avatar alt=roomName class='avatar')
+                else
+                    img(src='/images/default-avatar.jpg' alt='Avatar mặc định' class='avatar')
 
-                if room.lastPreview
-                    - const sender = room.lastPreview.sender || ''
-                    - const content = room.lastPreview.content || ''
-                    span #{sender}: #{content}
+                .info 
+                    strong #{roomName}
+                    if room.lastPreview
+                        - const sender = room.lastPreview.sender || ''
+                        - const content = room.lastPreview.content || ''
+                        span #{sender}: #{content}
     else
         .conversation
             strong Không có cuộc trò chuyện nào
@@ -35,35 +41,47 @@ block main
             h3 Chào mừng bạn đến với Chat!
             p Chọn một cuộc trò chuyện ở bên trái để bắt đầu hoặc tạo phòng mới.
     else
+        // .inner-body: Chứa toàn bộ nội dung chat và Box Typing
+        // Nó sẽ giãn nở (flex: 1) để đẩy .inner-foot xuống dưới
         .inner-body(my-id=user.id my-name=user.fullName)
             for chat in chats
+                // Tin nhắn đi/đến (inner-outgoing/inner-incoming)
                 div(class=(chat.user_id == user.id ? 'inner-outgoing' : 'inner-incoming'))
+                    
                     if chat.user_id != user.id
-                        if chat.infoUser
-                            .inner-name #{chat.infoUser.fullName}
+                        // Thẻ Avatar
+                        if chat.infoUser && chat.infoUser.avatar
+                            img(src=chat.infoUser.avatar alt=chat.infoUser.fullName class='chat-avatar')
                         else
-                            .inner-name Không rõ
-                    if (chat.content)
-                        .inner-content #{chat.content}
-                    if chat.images && chat.images.length > 0
-                        .inner-images
-                            for image in chat.images
-                                img(src=image alt="image" class="chat-image")
-
+                            img(src='/images/default-avatar.jpg' alt='Avatar mặc định' class='chat-avatar')
+                    
+                    // Thẻ bọc để nhóm Tên và Nội dung
+                    .message-group 
+                        if chat.user_id != user.id
+                            if chat.infoUser
+                                .inner-name #{chat.infoUser.fullName}
+                            else
+                                .inner-name Không rõ
+                        
+                        if (chat.content)
+                            .inner-content #{chat.content}
+                        
+                        if chat.images && chat.images.length > 0
+                            .inner-images
+                                for image in chat.images
+                                    img(src=image alt="image" class="chat-image")
+            
+            // Đảm bảo .inner-list-typing nằm trong .inner-body để cuộn theo tin nhắn
             .inner-list-typing
         
-        //- .inner-preview-images
-        //-     div(class="custom-file-container" data-upload-id="upload-images")
-
+        // .inner-foot: Chứa ô nhập. Nó phải nằm NGAY SAU .inner-body và CÙNG CẤP.
         .inner-foot
             form(class='inner-form' action='')
                 input(type="text" placeholder='Nhập nội dung...' name='content' autocomplete="off")
-                //- label(class='button-icon btn btn-light mx-2')
-                //-     i.fa-solid.fa-image
                 span(class='button-icon btn btn-light mx-2') 
                     i.fa-regular.fa-face-smile
                 button
                     i.fa-solid.fa-paper-plane
 
-        div(class='tooltip' role='tooltip')
-            emoji-picker
+            div(class='tooltip' role='tooltip')
+                emoji-picker
