@@ -35,7 +35,7 @@ block main
             h3 Chào mừng bạn đến với Chat!
             p Chọn một cuộc trò chuyện ở bên trái để bắt đầu hoặc tạo phòng mới.
     else
-        .inner-body(my-id=user.id)
+        .inner-body(my-id=user.id my-name=user.fullName)
             for chat in chats
                 div(class=(chat.user_id == user.id ? 'inner-outgoing' : 'inner-incoming'))
                     if chat.user_id != user.id

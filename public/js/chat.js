@@ -5,6 +5,24 @@
 // });
 // end file-upload-with-preview
 
+// Join room khi page load (nếu đang ở trang chat)
+document.addEventListener('DOMContentLoaded', () => {
+    const chatBody = document.querySelector('.content-view .inner-body');
+    if (chatBody) {
+        const userID = chatBody.getAttribute('my-id');
+        const fullName = chatBody.getAttribute('my-name') || 'User';
+        // Lấy roomChatID từ URL (pathname: /{roomChatID})
+        const pathParts = window.location.pathname.split('/');
+        const roomChatID = pathParts[1]; // Phần tử thứ 1 sau '/'
+        
+        if (roomChatID && userID) {
+            console.log(`[join] Joining room ${roomChatID} as user ${userID}`);
+            joinRoom(roomChatID, userID, fullName);
+        }
+    }
+});
+// End Join room
+
 // add class active cho sidebar
 // public/js/chat.js
 document.addEventListener('DOMContentLoaded', () => {

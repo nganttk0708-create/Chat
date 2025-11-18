@@ -1,46 +1,53 @@
-const Chat = require('../model/chat.model')
+const Chat = require('../model/chat.model');
+const uploadToCloundinary = require('../helper/uploadToCloudinary');
 
-module.exports = (req, res) => {
-    const userID = res.locals.user.id
-    const fullName = res.locals.user.fullName
-    const roomChatID = req.params.roomChatID;
+module.exports = (_io) => {
+  _io.on('connection', (socket) => {
+    console.log('[socket] New client connected:', socket.id);
 
-    _io.once('connection', (socket) => {
-        socket.join(roomChatID)
+    // Join room
+    socket.on('join-room', async ({ roomChatID, userID, fullName }) => {
+      if (!roomChatID) return;
 
-        socket.on('client-send-message', async (content) => {
-            let images = []
+      socket.join(roomChatID);
+      console.log(`[socket] ${socket.id} joined room ${roomChatID} (user: ${userID})`);
 
-            for (const imageBuffer of content.images) {
-                const linkImage = await uploadToCloundinary(imageBuffer)
-                images.push(linkImage)
-            }
+      // Nhận tin nhắn từ client
+      socket.on('client-send-message', async (content) => {
+        console.log(`[message] ${userID} sent to room ${roomChatID}:`, content.content);
 
-            const chat = new Chat({
-                user_id: userID,
-                room_id: roomChatID,
-                content: content.content,
-                images: images
+        let images = [];
+        for (const imageBuffer of content.images || []) {
+          const linkImage = await uploadToCloundinary(imageBuffer);
+          images.push(linkImage);
+        }
 
-            })
-            await chat.save()
+        const chat = new Chat({
+          user_id: userID,
+          room_id: roomChatID,
+          content: content.content,
+          images: images,
+        });
+        await chat.save();
 
-            _io.to(roomChatID).emit('server-return-message', {
-                userID: userID,
-                fullName: fullName,
-                content: content.content,
-                images: images
-            })
-        })
+        // Broadcast message cho tất cả user trong room
+        _io.to(roomChatID).emit('server-return-message', {
+          userID,
+          fullName,
+          content: content.content,
+          images,
+        });
+      });
 
-        // Typing
-        socket.on('client-typing', async (type) => {
-            socket.broadcast.to(roomChatID).emit('server-return-typing', {
-                user_id: userID,
-                fullName: fullName,
-                type: type
-            })
-        })
-        // End Typing
-    })
-}
+      // Typing event
+      socket.on('client-typing', (type) => {
+        socket.broadcast.to(roomChatID).emit('server-return-typing', {
+          user_id: userID,
+          fullName,
+          type,
+        });
+      });
+    });
+
+  });
+};
