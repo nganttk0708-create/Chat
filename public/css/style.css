@@ -310,8 +310,8 @@ body {
 .inner-name {
     /* ĐÃ SỬA: Màu TRẮNG SÁNG và text-shadow trắng */
     font-size: 25px !important; 
-    color: var(--accent-color-light) !important;
-    text-shadow: 0 0 3px rgba(247, 246, 244, 0.6);
+    color: var(--text-light) !important;
+    text-shadow: none;
     background: none;
     -webkit-background-clip: unset;
     -webkit-text-fill-color: unset;
