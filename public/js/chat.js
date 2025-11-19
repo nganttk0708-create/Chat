@@ -27,11 +27,48 @@ document.addEventListener('DOMContentLoaded', () => {
 // public/js/chat.js
 document.addEventListener('DOMContentLoaded', () => {
     const currentPath = window.location.pathname;
+    const pathParts = currentPath.split('/');
+    const currentRoomId = pathParts[1] || '';
     const sidebarLinks = document.querySelectorAll('.sidebar .chat-list li a');
 
+    // Kiểm tra xem URL hiện tại có phải là 1 room không bằng cách
+    // đối chiếu với data-room-id trong danh sách conversation
+    const convElements = document.querySelectorAll('.content-list .conversation');
+    const isRoomPath = currentRoomId && Array.from(convElements).some(el => el.getAttribute('data-room-id') === currentRoomId);
+
     sidebarLinks.forEach(link => {
-        // Tự động active theo URL
-        if (link.getAttribute('href') === currentPath) {
+        const href = link.getAttribute('href');
+
+        // Nếu link là '/' (Tin nhắn) thì active khi:
+        // - đang ở '/' hoặc
+        // - đang ở 1 room (isRoomPath === true)
+        if (href === '/') {
+            if (currentPath === '/' || isRoomPath) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+            return;
+        }
+
+        // Nếu link là social dashboard (bất kỳ đường dẫn bắt đầu bằng '/socialDashboard')
+        if (href && href.startsWith('/socialDashboard')) {
+            if (currentPath.startsWith('/socialDashboard')) {
+                link.classList.add('active');
+            } else {
+                link.classList.remove('active');
+            }
+
+            // Xử lý click
+            link.addEventListener('click', function(e) {
+                sidebarLinks.forEach(l => l.classList.remove('active'));
+                this.classList.add('active');
+            });
+            return;
+        }
+
+        // ngược lại, match chính xác theo pathname
+        if (href === currentPath) {
             link.classList.add('active');
         } else {
             link.classList.remove('active');
@@ -45,6 +82,37 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 });
 // end add class active cho sidebar
+
+// add class active cho conversation list (danh sách phòng)
+document.addEventListener('DOMContentLoaded', () => {
+    const convLinks = document.querySelectorAll('.content-list .conversation');
+
+    // Lấy roomId từ URL (ví dụ '/<roomId>') để dùng làm nguồn chân thực
+    const pathParts = window.location.pathname.split('/');
+    const currentRoomId = pathParts[1] || '';
+
+    convLinks.forEach(link => {
+        const href = link.getAttribute('href') || '';
+        const dataRoomId = link.getAttribute('data-room-id') || '';
+
+        // Tự động active theo data-room-id (ưu tiên) hoặc theo href nếu không có data
+        const shouldActive = (dataRoomId && dataRoomId === currentRoomId) || (href === window.location.pathname);
+
+        if (shouldActive) {
+            link.classList.add('active');
+            console.log('[chat] set active conversation:', { href, dataRoomId, currentRoomId });
+        } else {
+            link.classList.remove('active');
+        }
+
+        // Xử lý click: đảm bảo active chỉ trên conversation được chọn
+        link.addEventListener('click', function(e) {
+            convLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+// end add class active cho conversation list
 
 // add class active cho menu social
 document.addEventListener('DOMContentLoaded', () => {
