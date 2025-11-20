@@ -19,34 +19,79 @@ console.log('Using serverUrl for email links:', serverUrl);
 const User = require('../model/accounts.model');
 const md5 = require('md5');
 const sendEmail = require('../scripts/sendEmail');
+const generate = require('../helper/generate');
+
+// Helper to compute server URL per-request. Prefer `process.env.SERVER_URL`,
+// otherwise build from the incoming request so links match how the client reached the server.
+function getServerUrlForReq(req) {
+    const raw = process.env.SERVER_URL;
+    if (raw) {
+        let url = raw;
+        if (!/^https?:\/\//i.test(url)) url = `http://${url}`;
+        return url.replace(/\/$/, '');
+    }
+    // Build from request
+    const proto = req.protocol || 'http';
+    const host = req.get && req.get('host') ? req.get('host') : `localhost:${process.env.PORT || 3000}`;
+    return `${proto}://${host}`.replace(/\/$/, '');
+}
 
 // [GET] /auth/register
 module.exports.register = async (req, res) => {
-    res.render('pages/auth/register', { pageTitle: 'Đăng ký' })
+    res.render('pages/auth/register', { pageTitle: 'Đăng ký' });
 }
 
 // [POST] /auth/register
 module.exports.registerPost = async (req, res) => {
-    const emailExist = await User.findOne({ email: req.body.email, deleted: false });
+    const { email, password: rawPassword, fullName, numberPhone } = req.body;
 
-    if (emailExist) {
-        req.flash('error', 'Email đã tồn tại.');
-        return res.redirect('back');
+    const existing = await User.findOne({ email, deleted: false });
+
+    // Nếu email đã tồn tại và đã xác thực → báo lỗi
+    if (existing && existing.verified) {
+        req.flash('error', 'Email đã tồn tại. Vui lòng sử dụng email khác.');
+        return res.redirect('/auth/register'); // giữ lại form đăng ký
     }
 
-    req.body.password = md5(req.body.password);
-    const record = new User(req.body)
+    // Prepare password hash và token mới
+    const hashed = md5(rawPassword);
+    const newVerifyToken = generate.generateRandomToken(40);
+
+    // Build verify link
+    const finalServerUrl = getServerUrlForReq(req);
+    if (!process.env.SERVER_URL) console.warn('SERVER_URL is not set; using request host for verify link:', finalServerUrl);
+    const verifyLink = `${finalServerUrl}/auth/verify-email?token=${newVerifyToken}`;
+
+    // Nếu email đã tồn tại nhưng chưa xác thực → cập nhật token và gửi lại email
+    if (existing && !existing.verified) {
+        existing.fullName = fullName;
+        existing.password = hashed;
+        existing.numberPhone = numberPhone;
+        existing.verifyToken = newVerifyToken;
+        await existing.save();
+
+        await sendEmail(
+            email,
+            'Xác thực tài khoản Chat App',
+            `<p>Nhấn vào link để xác thực: <a href="${verifyLink}">${verifyLink}</a></p>`
+        );
+
+        return res.render('pages/auth/emailSent', {
+            pageTitle: 'Gửi lại email xác thực',
+            message: `Email xác thực đã được gửi tới ${email}`
+        });
+    }
+
+    // User mới → tạo record
+    const record = new User({ fullName, email, password: hashed, numberPhone, verifyToken: newVerifyToken });
     await record.save();
 
-    // Gửi email xác thực
-    const verifyLink = `${serverUrl}/auth/verify-email?token=${record.verifyToken}`;
     await sendEmail(
-        record.email,
+        email,
         'Xác thực tài khoản Chat App',
         `<p>Nhấn vào link để xác thực: <a href="${verifyLink}">${verifyLink}</a></p>`
     );
 
-    // Render email sent page
     return res.render('pages/auth/emailSent', {
         pageTitle: 'Xác thực email',
         message: `Chúng tôi đã gửi email xác thực tới ${record.email}`
@@ -87,8 +132,10 @@ module.exports.resendEmail = async (req, res) => {
         return res.redirect('/auth/login');
     }
 
-    // Gửi lại email xác thực
-    const verifyLink = `${serverUrl}/auth/verify-email?token=${user.verifyToken}`;
+    const finalServerUrl = getServerUrlForReq(req);
+    if (!process.env.SERVER_URL) console.warn('SERVER_URL is not set; using request host for verify link:', finalServerUrl);
+    const verifyLink = `${finalServerUrl}/auth/verify-email?token=${user.verifyToken}`;
+    console.log('Verification link generated (resend):', verifyLink);
     await sendEmail(
         user.email,
         'Xác thực tài khoản Chat App',
@@ -127,10 +174,20 @@ module.exports.loginPost = async (req, res) => {
 module.exports.logout = async (req, res) => {
     const token = req.cookies.token;
     const user = await User.findOne({ token });
+
     if (user) {
         await User.updateOne({ token }, { statusOnline: 'offline' });
-        if (global._io) global._io.emit('server-return-user-status-online', { userID: user.id, status: 'offline' });
+        if (global._io) {
+            global._io.emit('server-return-user-status-online', {
+                userID: user.id,
+                status: 'offline'
+            });
+        }
     }
+
     res.clearCookie('token');
-    res.redirect('/auth/login');
-}
+    res.cookie('toastMessage', 'Đăng xuất thành công');
+    res.cookie('toastType', 'success');
+    return res.redirect('/auth/login');
+};
+

@@ -11,3 +11,6 @@ avatarInput.addEventListener('change', function() {
         reader.readAsDataURL(file)
     }
 })
+
+// Sau khi submit form update profile thành công
+showToast('Cập nhật thông tin thành công', 'success');
