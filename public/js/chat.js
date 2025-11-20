@@ -179,36 +179,51 @@ socket.on('server-return-message', (data) => {
     const boxTyping = document.querySelector('.content-view .inner-list-typing');
 
     const messageDiv = document.createElement('div');
-    let htmlFullName = '';
-    let htmlContent = '';
-    let htmlImages = '';
+    let html = "";
 
     if (data.userID === myID) {
+        // Tin nhắn của mình
         messageDiv.classList.add('inner-outgoing');
+
+        html = `
+            <div class="message-group">
+                <div class="inner-content">${data.content}</div>
+
+                ${
+                    data.images?.length
+                    ? `<div class="inner-images">
+                        ${data.images.map(img => `<img src="${img}" class="chat-image"/>`).join("")}
+                       </div>`
+                    : ""
+                }
+            </div>
+        `;
     } else {
-        htmlFullName = `<div class='inner-name'>${data.fullName}</div>`;
+        // Tin nhắn của người khác
         messageDiv.classList.add('inner-incoming');
+
+        html = `
+            <img src="${data.avatar}" class="chat-avatar" />
+
+            <div class="message-group">
+                <div class="inner-name">${data.fullName}</div>
+
+                <div class="inner-content">${data.content}</div>
+
+                ${
+                    data.images?.length
+                    ? `<div class="inner-images">
+                        ${data.images.map(img => `<img src="${img}" class="chat-image"/>`).join("")}
+                       </div>`
+                    : ""
+                }
+            </div>
+        `;
     }
 
-    if (data.content){
-        htmlContent += `<div class='inner-content'>${data.content}</div>`;
-    }
-
-    if (data.images.length > 0) {
-        htmlImages += `<div class='inner-images'>`;
-        data.images.forEach((image) => {
-            htmlImages += `<img src='${image}' alt='image' class='chat-image'/>`;
-        });
-        htmlImages += `</div>`;
-    }
-
-    messageDiv.innerHTML = `
-        ${htmlFullName}
-        ${htmlContent}
-    `;
+    messageDiv.innerHTML = html;
 
     chatBody.insertBefore(messageDiv, boxTyping);
-
     chatBody.scrollTop = chatBody.scrollHeight;
 });
 // End Server Return Message

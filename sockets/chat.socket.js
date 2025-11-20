@@ -1,4 +1,5 @@
 const Chat = require('../model/chat.model');
+const User = require('../model/accounts.model');
 const uploadToCloundinary = require('../helper/uploadToCloudinary');
 
 module.exports = (_io) => {
@@ -12,15 +13,16 @@ module.exports = (_io) => {
       socket.join(roomChatID);
       console.log(`[socket] ${socket.id} joined room ${roomChatID} (user: ${userID})`);
 
-      // Nhận tin nhắn từ client
       socket.on('client-send-message', async (content) => {
-        console.log(`[message] ${userID} sent to room ${roomChatID}:`, content.content);
 
         let images = [];
         for (const imageBuffer of content.images || []) {
           const linkImage = await uploadToCloundinary(imageBuffer);
           images.push(linkImage);
         }
+
+        // Lấy thông tin user để gửi avatar, tên
+        const infoUser = await User.findById(userID).lean();
 
         const chat = new Chat({
           user_id: userID,
@@ -30,10 +32,10 @@ module.exports = (_io) => {
         });
         await chat.save();
 
-        // Broadcast message cho tất cả user trong room
         _io.to(roomChatID).emit('server-return-message', {
           userID,
-          fullName,
+          fullName: infoUser.fullName,
+          avatar: infoUser.avatar || "/images/default-avatar.jpg",
           content: content.content,
           images,
         });
