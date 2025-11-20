@@ -12,6 +12,13 @@ block main
                     .inner-info
                         .inner-name= user.fullName
                         .inner-buttons
+<<<<<<< HEAD
                             a.btn.btn-sm.btn-primary.mr-1(href=`/${user.friendInfo.room_chat_id}` btn-accept-friend=user.id) Nhắn tin
                     .inner-status(status=user.statusOnline)
+=======
+                            a.btn.btn-sm.btn-primary.mr-1(href=`/${u.friendInfo.room_chat_id}`) Nhắn tin
+                            button.btn.btn-sm.btn-danger.btn-unfriend(data-user-id=u.id) Hủy kết bạn
+
+                    .inner-status(status=u.statusOnline)
+>>>>>>> e2bc948 (thong bao khi login logout)
                         i.fa-solid.fa-circle

@@ -25,3 +25,9 @@ block main
                 .d.d-flex.justify-content-between.align-items-center.flex-wrap.gap-3
                     button.btn.btn-login(type="submit") Đăng ký
                     a.btn.btn-register(href="/auth/login") Đăng nhập
+
+block script
+    script(src="/js/toast.js")
+    if message
+        script.
+            showToast("#{message}", "error");

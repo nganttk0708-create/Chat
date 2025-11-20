@@ -46,6 +46,37 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 // end add class active cho sidebar
 
+// add class active cho conversation list (danh sách phòng)
+document.addEventListener('DOMContentLoaded', () => {
+    const convLinks = document.querySelectorAll('.content-list .conversation');
+
+    // Lấy roomId từ URL (ví dụ '/<roomId>') để dùng làm nguồn chân thực
+    const pathParts = window.location.pathname.split('/');
+    const currentRoomId = pathParts[1] || '';
+
+    convLinks.forEach(link => {
+        const href = link.getAttribute('href') || '';
+        const dataRoomId = link.getAttribute('data-room-id') || '';
+
+        // Tự động active theo data-room-id (ưu tiên) hoặc theo href nếu không có data
+        const shouldActive = (dataRoomId && dataRoomId === currentRoomId) || (href === window.location.pathname);
+
+        if (shouldActive) {
+            link.classList.add('active');
+            console.log('[chat] set active conversation:', { href, dataRoomId, currentRoomId });
+        } else {
+            link.classList.remove('active');
+        }
+
+        // Xử lý click: đảm bảo active chỉ trên conversation được chọn
+        link.addEventListener('click', function(e) {
+            convLinks.forEach(l => l.classList.remove('active'));
+            this.classList.add('active');
+        });
+    });
+});
+// end add class active cho conversation list
+
 // add class active cho menu social
 document.addEventListener('DOMContentLoaded', () => {
     const menuLinks = document.querySelectorAll('.social-menu a');

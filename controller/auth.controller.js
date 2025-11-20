@@ -147,10 +147,21 @@ module.exports.loginPost = async (req, res) => {
 module.exports.logout = async (req, res) => {
     const token = req.cookies.token;
     const user = await User.findOne({ token });
+
     if (user) {
         await User.updateOne({ token }, { statusOnline: 'offline' });
-        if (global._io) global._io.emit('server-return-user-status-online', { userID: user.id, status: 'offline' });
+        if (global._io) {
+            global._io.emit('server-return-user-status-online', {
+                userID: user.id,
+                status: 'offline'
+            });
+        }
     }
-    res.clearCookie('token');
-    res.redirect('/auth/login');
-}
+
+res.clearCookie('token');
+res.cookie('toastMessage', 'Đăng xuất thành công');
+res.cookie('toastType', 'success');
+return res.redirect('/auth/login');
+
+};
+

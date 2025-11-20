@@ -5,8 +5,16 @@ html
         
         link(href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous")        
         link(rel="stylesheet", href="/css/auth.css")
+
     body   
         block main
-                                    
 
+        // toast container for auth pages
+        #toast-container.position-fixed.top-0.end-0.p-3(style="z-index:1080;")
+
+        // scripts chung
         script(src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous")
+        script(src="/js/auth-notify.js")
+
+        // ⭐ THÊM BLOCK SCRIPT Ở ĐÂY
+        block script
