@@ -152,23 +152,25 @@ document.addEventListener('DOMContentLoaded', () => {
 // Client Send Message
 const formSendData = document.querySelector('.content-view .inner-form');
 
-if (formSendData) {
-    formSendData.addEventListener('submit', (e) => {
-        e.preventDefault();
-        const content = e.target.elements.content.value.trim();
-        const images = []//upload.cachedFileArray;
+let justSent = false;
 
-        if (content) {
-            socket.emit('client-send-message', {
-                content: content,
-                images: [] //images
-            });
-            socket.emit('client-typing', 'hidden');
-            e.target.elements.content.value = '';
-            // upload.resetPreviewPanel();
-        }
+formSendData.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const content = e.target.elements.content.value.trim();
+    if (!content) return;
+
+    socket.emit('client-send-message', {
+        content,
+        images: []
     });
-}
+
+    socket.emit('client-typing', 'hidden'); // ẩn typing
+    e.target.elements.content.value = '';
+
+    justSent = true;
+    setTimeout(() => { justSent = false }, 500); // 0.5s sau mới cho phép show typing
+});
+
 // End Client Send Message
 
 
@@ -249,19 +251,18 @@ if (buttonIcon) {
 // End Show Popup
 
 // Show Typing
-var timeOut
-
+let timeOut
 const showTyping = () => {
+    if (justSent) return; // nếu vừa gửi, đừng báo typing
+
     socket.emit('client-typing', 'show');
 
     clearTimeout(timeOut);
 
     timeOut = setTimeout(() => {
         socket.emit('client-typing', 'hidden');
-    }, 3000)
-}
-
-
+    }, 3000);
+};
 
 // End Show Typing
 
