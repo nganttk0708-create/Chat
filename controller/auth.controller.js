@@ -20,6 +20,21 @@ const User = require('../model/accounts.model');
 const md5 = require('md5');
 const sendEmail = require('../scripts/sendEmail');
 
+// Helper to compute server URL per-request. Prefer `process.env.SERVER_URL`,
+// otherwise build from the incoming request so links match how the client reached the server.
+function getServerUrlForReq(req) {
+    const raw = process.env.SERVER_URL;
+    if (raw) {
+        let url = raw;
+        if (!/^https?:\/\//i.test(url)) url = `http://${url}`;
+        return url.replace(/\/$/, '');
+    }
+    // Build from request
+    const proto = req.protocol || 'http';
+    const host = req.get && req.get('host') ? req.get('host') : `localhost:${process.env.PORT || 3000}`;
+    return `${proto}://${host}`.replace(/\/$/, '');
+}
+
 // [GET] /auth/register
 module.exports.register = async (req, res) => {
     res.render('pages/auth/register', { pageTitle: 'Đăng ký' })
@@ -39,7 +54,10 @@ module.exports.registerPost = async (req, res) => {
     await record.save();
 
     // Gửi email xác thực
-    const verifyLink = `${serverUrl}/auth/verify-email?token=${record.verifyToken}`;
+    const finalServerUrl = getServerUrlForReq(req);
+    if (!process.env.SERVER_URL) console.warn('SERVER_URL is not set; using request host for verify link:', finalServerUrl);
+    const verifyLink = `${finalServerUrl}/auth/verify-email?token=${record.verifyToken}`;
+    console.log('Verification link generated:', verifyLink);
     await sendEmail(
         record.email,
         'Xác thực tài khoản Chat App',
@@ -88,7 +106,10 @@ module.exports.resendEmail = async (req, res) => {
     }
 
     // Gửi lại email xác thực
-    const verifyLink = `${serverUrl}/auth/verify-email?token=${user.verifyToken}`;
+    const finalServerUrl = getServerUrlForReq(req);
+    if (!process.env.SERVER_URL) console.warn('SERVER_URL is not set; using request host for verify link:', finalServerUrl);
+    const verifyLink = `${finalServerUrl}/auth/verify-email?token=${user.verifyToken}`;
+    console.log('Verification link generated (resend):', verifyLink);
     await sendEmail(
         user.email,
         'Xác thực tài khoản Chat App',
