@@ -1,30 +1,22 @@
-// sendEmail.js
 const nodemailer = require('nodemailer');
 
 const sendEmail = async (to, subject, html) => {
-    if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
-        console.log("SMTP not configured, skipping email");
-        console.log(`Email preview for ${to}: ${html}`);
-        return;
+  const transporter = nodemailer.createTransporter({
+    host: process.env.EMAIL_HOST,
+    port: Number(process.env.EMAIL_PORT),
+    secure: false,
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS
     }
+  });
 
-    const transporter = nodemailer.createTransport({
-        host: process.env.SMTP_HOST,
-        port: Number(process.env.SMTP_PORT) || 587,
-        secure: Number(process.env.SMTP_PORT) === 465,
-        auth: {
-            user: process.env.SMTP_USER,
-            pass: process.env.SMTP_PASS
-        }
-    });
-
-    await transporter.sendMail({
-        from: process.env.EMAIL_FROM || process.env.SMTP_USER,
-        to,
-        subject,
-        html
-    });
+  await transporter.sendMail({
+    from: '"Chat 5T0G" <no-reply@chat5t0g.com>',
+    to,
+    subject,
+    html
+  });
 };
 
 module.exports = sendEmail;
-// End sendEmail.js
